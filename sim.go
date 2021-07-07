@@ -18,6 +18,8 @@ const numberOfExperiments = 10 //always the same
 const confidenceLevelUsed = 90
 const maxInterval = 0.3
 
+const degree = 7 // the degree of the user experiment
+
 var (
 	numberOfNodes int
 	safetyTTL int
@@ -84,7 +86,8 @@ func runExp() (string, map[int]float64, int) {
 	for n := 0; n < numberOfExperiments; n++ {
 
 		for i := 0; ; {
-			rInt := getRandInt(len(resources))
+			partialView := getRandInts(len(resources), degree)
+			rInt := partialView[getRandInt(len(partialView))]
 			if _, exists := nodesAlreadyVisited[rInt]; exists {
 				continue
 			}
@@ -406,4 +409,29 @@ func writeMapToFile(filename string, m map[int]int) {
 func getRandInt(roof int) int {
 	rand.Seed(int64(time.Now().Nanosecond()))
 	return rand.Intn(roof)
+}
+
+func getRandInts(roof int, degree int) []int {
+	var rands []int
+
+	for ;len(rands) < degree; {
+		rand.Seed(int64(time.Now().Nanosecond()))
+		toAdd := rand.Intn(roof)
+		if contains(rands, toAdd) {
+			continue
+		}
+		rands = append(rands, toAdd)
+	}
+
+	return rands
+}
+
+func contains(s []int, in int) bool {
+	for _, v := range s {
+		if v == in {
+			return true
+		}
+	}
+
+	return false
 }
