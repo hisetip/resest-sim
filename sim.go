@@ -15,8 +15,10 @@ import (
 
 const numberOfExperiments = 10 //always the same
 
+const distribution = "lognormal"
+
 const confidenceLevelUsed = 90
-const maxInterval = 0.3
+const maxInterval = 0.15
 
 const degree = 7 // the degree of the user experiment
 
@@ -34,7 +36,7 @@ var (
 func main() {
 	var resultsToPrint []string
 
-	for numberOfNodes = 50; numberOfNodes <= 1000000; {
+	for numberOfNodes = 1000; numberOfNodes <= 1000000; {
 		safetyTTL = numberOfNodes - 3
 		appendToPrint, resultHistogram, me := runExp()
 		resultsToPrint = append(resultsToPrint, appendToPrint)
@@ -62,7 +64,7 @@ func main() {
 		if numberOfNodes == 50 {
 			numberOfNodes = 100
 		} else {
-			numberOfNodes*=10
+			numberOfNodes*=1000
 		}
 	}
 	fmt.Println("-------------------------------------")
@@ -253,7 +255,7 @@ func reduceHistogram2class(h map[int]int, myResource int) map[int] int{
 }
 
 func readResourcesToArray() []int {
-	f, err := os.Open("resources")
+	f, err := os.Open("resources_" + distribution)
 	if err != nil {
 		panic(err)
 	}
